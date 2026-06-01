@@ -3,267 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CMS + Game</title>
+<title>My Firebase Board</title>
+
+<!-- Firebase SDK (웹용 compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
-
 body{
-    display:flex;
-    min-height:100vh;
-    background:linear-gradient(135deg,#0f172a,#1e293b);
+    font-family:sans-serif;
+    background:#0f172a;
     color:white;
-}
-
-/* 로그인 */
-.login{
-    position:fixed;inset:0;
-    display:flex;justify-content:center;align-items:center;
-    background:#0f172a;z-index:999;
-}
-
-.box{
-    background:rgba(255,255,255,0.06);
-    padding:25px;border-radius:15px;
-    width:260px;
-    display:flex;flex-direction:column;gap:10px;
-}
-
-/* 사이드 */
-.sidebar{
-    width:220px;
-    background:rgba(255,255,255,0.05);
     padding:20px;
-    backdrop-filter:blur(10px);
-}
-
-.sidebar button{
-    width:100%;
-    margin-bottom:8px;
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    background:rgba(255,255,255,0.08);
-    color:white;
-    cursor:pointer;
-}
-
-/* 콘텐츠 */
-.content{
-    flex:1;
-    padding:30px;
 }
 
 .card{
     background:rgba(255,255,255,0.06);
-    padding:20px;
-    border-radius:20px;
-    border:1px solid rgba(255,255,255,0.1);
-    margin-bottom:15px;
-}
-
-/* 게임 */
-#game .card{
-    max-width:420px;
-    margin:auto;
-    text-align:center;
-}
-
-#question{
-    font-size:22px;
-    margin:15px 0;
-}
-
-input,textarea{
-    width:100%;
-    padding:12px;
+    padding:15px;
     border-radius:12px;
-    border:none;
-    outline:none;
     margin-top:10px;
+}
+
+input,button{
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
 }
 
 button{
-    padding:10px;
-    border-radius:12px;
-    border:none;
-    cursor:pointer;
-    margin-top:10px;
     background:#3b82f6;
     color:white;
+    cursor:pointer;
 }
 
 button:hover{
     background:#2563eb;
-    transform:scale(1.03);
 }
-
-.hidden{display:none;}
 </style>
 </head>
 
 <body>
 
+<h2>🔥 Firebase 게시판</h2>
+
 <!-- 로그인 -->
-<div class="login" id="loginBox">
-<div class="box">
-
-<h3>LOGIN</h3>
-
-<input id="id" placeholder="ID">
-<input id="pw" type="password" placeholder="PW">
-<button onclick="login()">로그인</button>
-
-<hr style="opacity:0.2">
-
-<input id="nid" placeholder="회원가입 ID">
-<input id="npw" type="password" placeholder="PW">
-<button onclick="signup()">가입</button>
-
-<p id="msg"></p>
-
-</div>
+<div id="loginBox">
+    <button onclick="login()">구글 로그인</button>
 </div>
 
-<!-- 사이드 -->
-<div class="sidebar">
-<button onclick="show('home')">홈</button>
-<button onclick="show('board')">게시판</button>
-<button onclick="show('game')">게임</button>
-<button onclick="logout()">로그아웃</button>
-</div>
+<!-- 앱 -->
+<div id="app" style="display:none;">
+    <p id="user"></p>
 
-<!-- 콘텐츠 -->
-<div class="content">
+    <input id="text" placeholder="글 입력">
+    <button onclick="addPost()">글쓰기</button>
 
-<!-- 홈 -->
-<section id="home">
-<div class="card">환영 👋</div>
-</section>
+    <button onclick="logout()">로그아웃</button>
 
-<!-- 게시판 -->
-<section id="board" class="hidden">
-<div class="card">
-
-<h3>게시판</h3>
-
-<textarea id="text"></textarea>
-<button onclick="addPost()">작성</button>
-
-<div id="list"></div>
-
-</div>
-</section>
-
-<!-- 게임 -->
-<section id="game" class="hidden">
-<div class="card">
-
-<h3>🎮 단어 게임</h3>
-
-<p id="question">문제</p>
-
-<input id="answer" placeholder="정답 입력">
-<button onclick="check()">확인</button>
-
-<p id="score">점수: 0</p>
-
-</div>
-</section>
-
+    <div id="list"></div>
 </div>
 
 <script>
 
-// ===== 로그인 =====
-function signup(){
-    localStorage.setItem("u_"+nid.value,npw.value);
-    alert("가입 완료");
+// 🔥 Firebase 설정 (너 프로젝트)
+const firebaseConfig = {
+  apiKey: "AIzaSyCEUja-Qv2pfi6cXsYXFhlrJi7mikzB7xQ",
+  authDomain: "jonghwang-740ea.firebaseapp.com",
+  projectId: "jonghwang-740ea",
+  storageBucket: "jonghwang-740ea.firebasestorage.app",
+  messagingSenderId: "860043333916",
+  appId: "1:860043333916:web:91ace7d03c50371c33aad9",
+  measurementId: "G-TCHHPS1H5M"
+};
+
+// 초기화
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// 🔥 구글 로그인
+function login(){
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    auth.signInWithPopup(provider)
+    .then(result=>{
+        console.log(result.user);
+    });
 }
 
-function login(){
+// 🔥 로그인 상태 체크
+auth.onAuthStateChanged(user=>{
+    if(user){
+        document.getElementById("loginBox").style.display="none";
+        document.getElementById("app").style.display="block";
+        document.getElementById("user").innerText="👤 " + user.displayName;
 
-    if(id.value==="JongHwang" && pw.value==="Jonghwang"){
-        localStorage.setItem("role","admin");
-        enter();
+        loadPosts();
+    }else{
+        document.getElementById("loginBox").style.display="block";
+        document.getElementById("app").style.display="none";
+    }
+});
+
+// 🔥 글쓰기
+function addPost(){
+    const user = auth.currentUser;
+
+    if(!user){
+        alert("로그인 필요");
         return;
     }
 
-    if(localStorage.getItem("u_"+id.value)===pw.value){
-        localStorage.setItem("role","user");
-        enter();
-    }else{
-        msg.innerText="실패";
-    }
+    db.collection("posts").add({
+        text: document.getElementById("text").value,
+        name: user.displayName,
+        uid: user.uid,
+        time: Date.now()
+    });
+
+    document.getElementById("text").value="";
 }
 
-window.onload=()=>{
-    if(localStorage.getItem("logged")=="1") enter();
+// 🔥 실시간 불러오기
+function loadPosts(){
+    db.collection("posts")
+    .orderBy("time")
+    .onSnapshot(snapshot=>{
+        let html="";
+
+        snapshot.forEach(doc=>{
+            let d = doc.data();
+
+            html += `
+            <div class="card">
+                <b>${d.name}</b><br>
+                ${d.text}
+            </div>`;
+        });
+
+        document.getElementById("list").innerHTML = html;
+    });
 }
 
-// ===== 진입 =====
-function enter(){
-    localStorage.setItem("logged","1");
-    loginBox.style.display="none";
-    loadGame();
-}
-
-// ===== 로그아웃 =====
+// 🔥 로그아웃
 function logout(){
-    localStorage.clear();
-    location.reload();
-}
-
-// ===== 화면 =====
-function show(id){
-    document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
-    document.getElementById(id).classList.remove("hidden");
-}
-
-// ===== 게시판 =====
-let posts=[];
-
-function addPost(){
-    posts.push(text.value);
-    render();
-}
-
-function render(){
-    list.innerHTML=posts.map(p=>`<div class="card">${p}</div>`).join("");
-}
-
-// ===== 게임 =====
-let words=[
-    {q:"apple",a:"사과"},
-    {q:"dog",a:"개"},
-    {q:"book",a:"책"}
-];
-
-let i=0;
-let score=0;
-
-function loadGame(){
-    question.innerText=words[i].q;
-    scoreEl();
-}
-
-function check(){
-    if(answer.value===words[i].a){
-        score+=10;
-        alert("정답");
-    }else{
-        alert("틀림");
-    }
-
-    i++;
-    if(i>=words.length) i=0;
-
-    answer.value="";
-    loadGame();
-}
-
-function scoreEl(){
-    document.getElementById("score").innerText="점수: "+score;
+    auth.signOut();
 }
 
 </script>
