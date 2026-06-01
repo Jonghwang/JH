@@ -1,8 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JH 게시판</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<style>
+body{
+    margin:0;
+    padding:20px;
+    background:#111827;
+    color:white;
+    font-family:sans-serif;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+button,input{
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    margin:5px;
+}
+
+button{
+    cursor:pointer;
+}
+
+input{
+    width:300px;
+}
+
+.card{
+    background:#1f2937;
+    padding:10px;
+    margin-top:10px;
+    border-radius:10px;
+}
+</style>
+</head>
+<body>
+
+<h2>🔥 JH 게시판</h2>
+
+<div id="loginBox">
+    <button onclick="login()">구글 로그인</button>
+</div>
+
+<div id="app" style="display:none;">
+    <p id="user"></p>
+
+    <input id="text" placeholder="글 입력">
+    <button onclick="addPost()">글쓰기</button>
+    <button onclick="logout()">로그아웃</button>
+
+    <div id="list"></div>
+</div>
+
 <script>
 
-// =====================
-// 🔥 Firebase 설정
-// =====================
 const firebaseConfig = {
   apiKey: "AIzaSyCEUja-Qv2pfi6cXsYXFhlrJi7mikz7bXQ",
   authDomain: "jonghwang-740ea.firebaseapp.com",
@@ -18,28 +80,21 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-
-// =====================
-// 🔥 로그인
-// =====================
 function login(){
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithRedirect(provider);
 }
 
-// 로그인 결과 처리
 auth.getRedirectResult().catch(error=>{
     console.error(error);
 });
 
-// =====================
-// 🔥 로그인 상태 확인
-// =====================
 auth.onAuthStateChanged(user=>{
     if(user){
         document.getElementById("loginBox").style.display="none";
         document.getElementById("app").style.display="block";
-        document.getElementById("user").innerText = "👤 " + user.displayName;
+        document.getElementById("user").innerText =
+            "👤 " + user.displayName;
 
         loadPosts();
     }else{
@@ -48,17 +103,16 @@ auth.onAuthStateChanged(user=>{
     }
 });
 
-// =====================
-// 🔥 글쓰기
-// =====================
 function addPost(){
     const user = auth.currentUser;
+
     if(!user){
         alert("로그인 필요");
         return;
     }
 
-    const text = document.getElementById("text").value.trim();
+    const text =
+        document.getElementById("text").value.trim();
 
     if(!text){
         alert("내용 입력");
@@ -66,18 +120,15 @@ function addPost(){
     }
 
     db.collection("posts").add({
-        text: text,
-        name: user.displayName,
-        uid: user.uid,
-        time: Date.now()
+        text:text,
+        name:user.displayName,
+        uid:user.uid,
+        time:Date.now()
     });
 
     document.getElementById("text").value="";
 }
 
-// =====================
-// 🔥 게시글 불러오기
-// =====================
 function loadPosts(){
     db.collection("posts")
     .orderBy("time","desc")
@@ -101,11 +152,11 @@ function loadPosts(){
     });
 }
 
-// =====================
-// 🔥 로그아웃
-// =====================
 function logout(){
     auth.signOut();
 }
 
 </script>
+
+</body>
+</html>
