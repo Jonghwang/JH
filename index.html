@@ -20,6 +20,47 @@ body{
     min-height:100vh;
 }
 
+/* 로그인 화면 */
+.login-screen{
+    position:fixed;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    background:#0f172a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    gap:10px;
+    z-index:999;
+}
+
+.login-box{
+    background:rgba(255,255,255,0.05);
+    padding:25px;
+    border-radius:15px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:260px;
+}
+
+.login-box input{
+    padding:10px;
+    border:none;
+    border-radius:8px;
+}
+
+.login-box button{
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#2563eb;
+    color:white;
+}
+
+/* 기존 UI */
 .sidebar{
     width:260px;
     background:rgba(255,255,255,0.05);
@@ -105,6 +146,26 @@ footer{
 
 <body>
 
+<!-- 🔐 로그인 화면 -->
+<div class="login-screen" id="loginScreen">
+    <h2>🔐 로그인 / 가입</h2>
+
+    <div class="login-box">
+        <input id="su_id" placeholder="회원가입 아이디">
+        <input id="su_pw" placeholder="회원가입 비밀번호" type="password">
+        <button onclick="signup()">가입</button>
+
+        <hr style="opacity:0.2">
+
+        <input id="li_id" placeholder="로그인 아이디">
+        <input id="li_pw" placeholder="로그인 비밀번호" type="password">
+        <button onclick="login()">로그인</button>
+    </div>
+
+    <p id="msg"></p>
+</div>
+
+<!-- 🔓 메인 -->
 <div class="sidebar">
     <div class="logo">📁 Archive</div>
 
@@ -128,22 +189,9 @@ footer{
 </div>
 
 <div class="stats">
-
-<div class="stat">
-기록 수
-<div class="number">124</div>
-</div>
-
-<div class="stat">
-프로젝트
-<div class="number">8</div>
-</div>
-
-<div class="stat">
-업데이트
-<div class="number">Today</div>
-</div>
-
+<div class="stat">기록 수<div class="number">124</div></div>
+<div class="stat">프로젝트<div class="number">8</div></div>
+<div class="stat">업데이트<div class="number">Today</div></div>
 </div>
 
 </section>
@@ -151,39 +199,33 @@ footer{
 <section id="record" class="hidden">
 <div class="card">
 <h1>📅 활동 기록</h1>
-
 <ul>
 <li>2026-06-01 사이트 제작 시작</li>
 <li>2026-05-31 단어 게임 기획</li>
 <li>2026-05-20 프로젝트 정리</li>
 </ul>
-
 </div>
 </section>
 
 <section id="project" class="hidden">
 <div class="card">
 <h1>🎮 프로젝트</h1>
-
 <ul>
 <li>단어 게임</li>
 <li>개인 홈페이지</li>
 <li>기록 관리 시스템</li>
 </ul>
-
 </div>
 </section>
 
 <section id="study" class="hidden">
 <div class="card">
 <h1>📚 공부 기록</h1>
-
 <ul>
 <li>수학 - 삼각형</li>
 <li>영어 - 단어 암기</li>
 <li>역사 - 조선 후기</li>
 </ul>
-
 </div>
 </section>
 
@@ -197,12 +239,10 @@ footer{
 <section id="files" class="hidden">
 <div class="card">
 <h1>📁 자료실</h1>
-
 <ul>
 <li><a href="#" style="color:#60a5fa;">파일1.zip</a></li>
 <li><a href="#" style="color:#60a5fa;">문서.pdf</a></li>
 </ul>
-
 </div>
 </section>
 
@@ -213,16 +253,41 @@ Made by Me
 </div>
 
 <script>
+
+// 화면 전환
 function show(id){
-
-const sections=document.querySelectorAll("section");
-
-sections.forEach(section=>{
-section.classList.add("hidden");
-});
-
-document.getElementById(id).classList.remove("hidden");
+    document.querySelectorAll("section").forEach(s=>{
+        s.classList.add("hidden");
+    });
+    document.getElementById(id).classList.remove("hidden");
 }
+
+// 가입
+function signup(){
+    let id=document.getElementById("su_id").value;
+    let pw=document.getElementById("su_pw").value;
+
+    if(!id||!pw) return alert("입력");
+
+    localStorage.setItem("user_"+id,pw);
+    alert("가입 완료");
+}
+
+// 로그인
+function login(){
+    let id=document.getElementById("li_id").value;
+    let pw=document.getElementById("li_pw").value;
+
+    let saved=localStorage.getItem("user_"+id);
+
+    if(saved===pw){
+        document.getElementById("loginScreen").style.display="none";
+        document.getElementById("msg").innerText="";
+    }else{
+        document.getElementById("msg").innerText="로그인 실패";
+    }
+}
+
 </script>
 
 </body>
