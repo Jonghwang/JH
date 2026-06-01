@@ -3,105 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Archive CMS</title>
+<title>My CMS</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 body{background:#0f172a;color:white;display:flex;min-height:100vh;}
 
-.login-screen{
-    position:fixed;inset:0;background:#0f172a;
-    display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:999;
+.login{
+    position:fixed;inset:0;
+    display:flex;justify-content:center;align-items:center;
+    background:#0f172a;z-index:999;
 }
-.login-box{
+
+.box{
     background:rgba(255,255,255,0.05);
     padding:25px;border-radius:15px;
-    display:flex;flex-direction:column;gap:10px;width:260px;
+    width:260px;display:flex;flex-direction:column;gap:10px;
 }
-.login-box input{padding:10px;border-radius:8px;border:none;}
-.login-box button{padding:10px;border-radius:8px;border:none;background:#2563eb;color:white;cursor:pointer;}
+
+input,textarea{
+    padding:10px;border:none;border-radius:8px;
+}
+
+button{
+    padding:8px;border:none;border-radius:8px;
+    cursor:pointer;
+}
 
 .sidebar{
-    width:260px;background:rgba(255,255,255,0.05);
-    padding:25px;border-right:1px solid rgba(255,255,255,0.1);
+    width:240px;background:rgba(255,255,255,0.05);
+    padding:20px;
 }
-.logo{font-size:28px;font-weight:bold;margin-bottom:20px;}
 
-.nav button{
-    width:100%;margin-bottom:8px;padding:12px;
-    border:none;border-radius:10px;background:none;color:white;cursor:pointer;
+.content{
+    flex:1;padding:25px;
 }
-.nav button:hover{background:rgba(255,255,255,0.1);}
 
-.content{flex:1;padding:30px;}
-.card{background:rgba(255,255,255,0.05);padding:20px;border-radius:15px;margin-bottom:15px;}
+.card{
+    background:rgba(255,255,255,0.05);
+    padding:15px;border-radius:12px;margin-bottom:10px;
+}
+
 .hidden{display:none;}
-
-input,textarea{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:none;}
-button{margin-top:10px;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;}
 </style>
 </head>
 
 <body>
 
 <!-- 🔐 로그인 -->
-<div class="login-screen" id="loginScreen">
-    <h2>🔐 Login</h2>
+<div class="login" id="loginBox">
+<div class="box">
+<h3>LOGIN</h3>
 
-    <div class="login-box">
-        <input id="su_id" placeholder="회원가입 ID">
-        <input id="su_pw" placeholder="회원가입 PW" type="password">
-        <button onclick="signup()">가입</button>
+<input id="id" placeholder="ID">
+<input id="pw" type="password" placeholder="PW">
+<button onclick="login()">로그인</button>
 
-        <hr style="opacity:0.2">
+<hr style="opacity:0.2">
 
-        <input id="li_id" placeholder="로그인 ID">
-        <input id="li_pw" placeholder="로그인 PW" type="password">
-        <button onclick="login()">로그인</button>
-    </div>
+<input id="nid" placeholder="회원가입 ID">
+<input id="npw" type="password" placeholder="PW">
+<button onclick="signup()">가입</button>
 
-    <p id="msg"></p>
+<p id="msg"></p>
+</div>
 </div>
 
-<!-- 🔓 사이드 -->
+<!-- 📌 사이드 -->
 <div class="sidebar">
-    <div class="logo">📁 CMS</div>
+<h3>CMS</h3>
 
-    <div class="nav">
-        <button onclick="show('home')">홈</button>
-        <button onclick="show('posts')">게시판</button>
-        <button onclick="show('admin')" id="adminBtn" style="display:none;">관리자</button>
-    </div>
+<button onclick="show('home')">홈</button>
+<button onclick="show('board')">게시판</button>
+<button onclick="show('admin')" id="adminBtn" style="display:none;">관리자</button>
 
-    <button onclick="logout()">로그아웃</button>
+<button onclick="logout()">로그아웃</button>
 </div>
 
-<!-- 🔓 콘텐츠 -->
+<!-- 📌 컨텐츠 -->
 <div class="content">
 
 <section id="home">
-<div class="card">
-<h2>환영 👋</h2>
-<p>유저 + 관리자 승인 CMS</p>
-</div>
+<div class="card">환영 👋</div>
 </section>
 
-<!-- 📝 게시판 -->
-<section id="posts" class="hidden">
+<!-- 게시판 -->
+<section id="board" class="hidden">
 <div class="card">
-<h2>📝 게시판</h2>
 
-<textarea id="postText" placeholder="글 작성"></textarea>
+<h3>게시판</h3>
+
+<textarea id="text"></textarea>
 <button onclick="addPost()">작성</button>
 
-<div id="postList"></div>
+<div id="list"></div>
+
 </div>
 </section>
 
-<!-- 🛠 관리자 -->
+<!-- 관리자 -->
 <section id="admin" class="hidden">
 <div class="card">
-<h2>🛠 관리자 승인 대기</h2>
+<h3>승인 대기</h3>
 <div id="adminList"></div>
 </div>
 </section>
@@ -110,148 +113,119 @@ button{margin-top:10px;padding:8px 12px;border-radius:8px;border:none;cursor:poi
 
 <script>
 
-// ===== DB =====
-function getData(k){return JSON.parse(localStorage.getItem(k)||"[]");}
-function saveData(k,v){localStorage.setItem(k,JSON.stringify(v));}
+// ===== 데이터 =====
+const get = k => JSON.parse(localStorage.getItem(k)||"[]");
+const set = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
 
-// ===== 로그인 =====
+// ===== 회원가입 =====
 function signup(){
-    let id=su_id.value;
-    let pw=su_pw.value;
-    if(!id||!pw) return;
-
-    localStorage.setItem("user_"+id,pw);
-    alert("가입 완료");
+    let i=nid.value, p=npw.value;
+    localStorage.setItem("u_"+i,p);
+    alert("가입완료");
 }
 
+// ===== 로그인 =====
 function login(){
-    let id=li_id.value;
-    let pw=li_pw.value;
+    let i=id.value, p=pw.value;
 
-    if(id==="JongHwang" && pw==="Jonghwang"){
+    if(i==="JongHwang" && p==="Jonghwang"){
         localStorage.setItem("role","admin");
-        enterSite();
+        localStorage.setItem("login","1");
+        enter();
         return;
     }
 
-    let saved=localStorage.getItem("user_"+id);
-
-    if(saved===pw){
+    if(localStorage.getItem("u_"+i)===p){
         localStorage.setItem("role","user");
-        localStorage.setItem("currentUser",id);
-        enterSite();
+        localStorage.setItem("user",i);
+        localStorage.setItem("login","1");
+        enter();
     }else{
-        msg.innerText="로그인 실패";
+        msg.innerText="실패";
     }
 }
 
 // ===== 자동 로그인 =====
-window.onload=function(){
-    if(localStorage.getItem("loggedIn")==="true"){
-        enterSite();
-    }
+window.onload=()=>{
+    if(localStorage.getItem("login")==="1") enter();
 }
 
 // ===== 진입 =====
-function enterSite(){
-    loginScreen.style.display="none";
-
-    localStorage.setItem("loggedIn","true");
-
-    if(localStorage.getItem("role")==="admin"){
-        adminBtn.style.display="block";
-    }
-
-    loadPosts();
-    loadAdmin();
+function enter(){
+    loginBox.style.display="none";
+    if(localStorage.getItem("role")==="admin") adminBtn.style.display="block";
+    load();
 }
 
 // ===== 로그아웃 =====
 function logout(){
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("role");
+    localStorage.clear();
     location.reload();
 }
 
-// ===== 페이지 =====
+// ===== 화면 =====
 function show(id){
     document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
     document.getElementById(id).classList.remove("hidden");
 }
 
-// ===== 게시글 작성 =====
+// ===== 글쓰기 (유저 가능) =====
 function addPost(){
-    let role=localStorage.getItem("role");
-    let user=localStorage.getItem("currentUser")||"guest";
+    let d=get("posts");
 
-    let d=getData("posts");
+    let role=localStorage.getItem("role");
+    let user=localStorage.getItem("user")||"guest";
 
     d.push({
         id:Date.now(),
-        text:postText.value,
-        author:user,
+        text:text.value,
+        user:user,
         status: role==="admin" ? "approved":"pending"
     });
 
-    saveData("posts",d);
-    loadPosts();
-    loadAdmin();
+    set("posts",d);
+    load();
 }
 
-// ===== 게시글 출력 (승인만) =====
-function loadPosts(){
+// ===== 게시판 =====
+function load(){
     let role=localStorage.getItem("role");
-    let d=getData("posts");
+    let d=get("posts");
 
-    let list = d.filter(p=> role==="admin" || p.status==="approved");
+    let showList = d.filter(i=>{
+        return role==="admin" || i.status==="approved";
+    });
 
-    postList.innerHTML=list.map(i=>
+    list.innerHTML=showList.map(i=>
         `<div class="card">
             ${i.text}
             <br>
-            <small>${i.author} / ${i.status}</small>
-            ${role==="admin" && i.status==="pending"
-                ? `<button onclick="approve(${i.id})">승인</button>`:""}
-            <button onclick="deletePost(${i.id})">삭제</button>
+            <small>${i.user} / ${i.status}</small>
         </div>`
     ).join("");
-}
 
-// ===== 관리자 대기 =====
-function loadAdmin(){
-    let d=getData("posts").filter(p=>p.status==="pending");
-
-    adminList.innerHTML=d.map(i=>
-        `<div class="card">
-            ${i.text}
-            <br>
-            <small>${i.author}</small>
-            <button onclick="approve(${i.id})">승인</button>
-            <button onclick="deletePost(${i.id})">삭제</button>
-        </div>`
-    ).join("");
+    // 관리자 리스트
+    if(role==="admin"){
+        adminList.innerHTML=d.filter(i=>i.status==="pending").map(i=>
+            `<div class="card">
+                ${i.text}
+                <br>
+                <small>${i.user}</small>
+                <button onclick="approve(${i.id})">승인</button>
+            </div>`
+        ).join("");
+    }
 }
 
 // ===== 승인 =====
 function approve(id){
-    let d=getData("posts");
-
-    d=d.map(p=>{
-        if(p.id===id) p.status="approved";
-        return p;
+    let d=get("posts").map(i=>{
+        if(i.id===id) i.status="approved";
+        return i;
     });
 
-    saveData("posts",d);
-    loadPosts();
-    loadAdmin();
-}
-
-// ===== 삭제 =====
-function deletePost(id){
-    let d=getData("posts").filter(p=>p.id!==id);
-    saveData("posts",d);
-    loadPosts();
-    loadAdmin();
+    set("posts",d);
+    load();
 }
 
 </script>
