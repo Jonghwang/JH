@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Archive</title>
+<title>My Archive CMS</title>
 
 <style>
 *{
@@ -20,18 +20,15 @@ body{
     min-height:100vh;
 }
 
-/* 🔐 로그인 */
+/* ===== 로그인 ===== */
 .login-screen{
     position:fixed;
-    top:0; left:0;
-    width:100%;
-    height:100%;
+    inset:0;
     background:#0f172a;
     display:flex;
     justify-content:center;
     align-items:center;
     flex-direction:column;
-    gap:10px;
     z-index:999;
 }
 
@@ -60,13 +57,12 @@ body{
     color:white;
 }
 
-/* 🔓 메인 */
+/* ===== 레이아웃 ===== */
 .sidebar{
     width:260px;
     background:rgba(255,255,255,0.05);
-    backdrop-filter:blur(15px);
-    border-right:1px solid rgba(255,255,255,0.1);
     padding:25px;
+    border-right:1px solid rgba(255,255,255,0.1);
 }
 
 .logo{
@@ -77,15 +73,13 @@ body{
 
 .nav button{
     width:100%;
+    margin-bottom:8px;
+    padding:12px;
     border:none;
+    border-radius:10px;
     background:none;
     color:white;
-    padding:14px;
-    text-align:left;
-    border-radius:10px;
     cursor:pointer;
-    margin-bottom:8px;
-    transition:.2s;
 }
 
 .nav button:hover{
@@ -94,50 +88,33 @@ body{
 
 .content{
     flex:1;
-    padding:35px;
+    padding:30px;
 }
 
 .card{
     background:rgba(255,255,255,0.05);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:20px;
-    padding:25px;
-    margin-bottom:20px;
-    backdrop-filter:blur(10px);
-}
-
-.hidden{
-    display:none;
-}
-
-.stats{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:15px;
-}
-
-.stat{
-    background:rgba(255,255,255,0.05);
     padding:20px;
     border-radius:15px;
+    margin-bottom:15px;
 }
 
-.number{
-    font-size:32px;
-    font-weight:bold;
-    margin-top:10px;
-}
+.hidden{display:none;}
 
-textarea{
+input,textarea{
     width:100%;
     padding:10px;
+    margin-top:10px;
     border-radius:10px;
+    border:none;
 }
 
 button{
+    margin-top:10px;
     cursor:pointer;
+    padding:8px 12px;
+    border-radius:8px;
+    border:none;
 }
-
 </style>
 </head>
 
@@ -145,151 +122,114 @@ button{
 
 <!-- 🔐 로그인 -->
 <div class="login-screen" id="loginScreen">
-    <h2>🔐 로그인</h2>
+    <h2>🔐 Login</h2>
 
     <div class="login-box">
-        <input id="su_id" placeholder="회원가입 아이디">
-        <input id="su_pw" placeholder="회원가입 비밀번호" type="password">
+        <input id="su_id" placeholder="회원가입 ID">
+        <input id="su_pw" placeholder="회원가입 PW" type="password">
         <button onclick="signup()">가입</button>
 
         <hr style="opacity:0.2">
 
-        <input id="li_id" placeholder="로그인 아이디">
-        <input id="li_pw" placeholder="로그인 비밀번호" type="password">
+        <input id="li_id" placeholder="로그인 ID">
+        <input id="li_pw" placeholder="로그인 PW" type="password">
         <button onclick="login()">로그인</button>
     </div>
 
     <p id="msg"></p>
 </div>
 
-<!-- 🔓 메인 -->
+<!-- 🔓 사이드바 -->
 <div class="sidebar">
-    <div class="logo">📁 Archive</div>
+    <div class="logo">📁 CMS</div>
 
     <div class="nav">
-        <button onclick="show('home')">🏠 홈</button>
-        <button onclick="show('record')">📅 기록</button>
-        <button onclick="show('project')">🎮 프로젝트</button>
-        <button onclick="show('study')">📚 공부</button>
-        <button onclick="show('gallery')">🖼️ 갤러리</button>
-        <button onclick="show('files')">📁 자료실</button>
-        <button onclick="show('admin')" id="adminBtn" style="display:none;">🛠️ 관리자</button>
+        <button onclick="show('home')">홈</button>
+        <button onclick="show('study')">공부</button>
+        <button onclick="show('gallery')">갤러리</button>
+        <button onclick="show('files')">자료실</button>
+        <button onclick="show('admin')" id="adminBtn" style="display:none;">관리자</button>
     </div>
 </div>
 
+<!-- 🔓 콘텐츠 -->
 <div class="content">
 
+<!-- 홈 -->
 <section id="home">
 <div class="card">
-<h1>환영합니다 👋</h1>
-<p>개인 기록 저장소입니다.</p>
-</div>
-
-<div class="stats">
-<div class="stat">기록 수<div class="number">124</div></div>
-<div class="stat">프로젝트<div class="number">8</div></div>
-<div class="stat">업데이트<div class="number">Today</div></div>
+<h2>환영 👋</h2>
+<p>관리형 CMS 사이트</p>
 </div>
 </section>
 
-<section id="record" class="hidden">
-<div class="card">
-<h1>📅 활동 기록</h1>
-<ul>
-<li>2026-06-01 사이트 제작 시작</li>
-<li>2026-05-31 단어 게임 기획</li>
-<li>2026-05-20 프로젝트 정리</li>
-</ul>
-</div>
-</section>
-
-<section id="project" class="hidden">
-<div class="card">
-<h1>🎮 프로젝트</h1>
-<ul>
-<li>단어 게임</li>
-<li>개인 홈페이지</li>
-<li>기록 관리 시스템</li>
-</ul>
-</div>
-</section>
-
+<!-- 공부 -->
 <section id="study" class="hidden">
 <div class="card">
-<h1>📚 공부 기록</h1>
-<ul>
-<li>수학 - 삼각형</li>
-<li>영어 - 단어 암기</li>
-<li>역사 - 조선 후기</li>
-</ul>
+<h2>📚 공부</h2>
+<input id="studyInput" placeholder="공부 내용">
+<button onclick="addStudy()">추가</button>
+<div id="studyList"></div>
 </div>
 </section>
 
+<!-- 갤러리 -->
 <section id="gallery" class="hidden">
 <div class="card">
-<h1>🖼️ 갤러리</h1>
-<p>이미지 공간</p>
+<h2>🖼 갤러리</h2>
+<input id="galleryInput" placeholder="이미지 URL">
+<button onclick="addGallery()">추가</button>
+<div id="galleryList"></div>
 </div>
 </section>
 
+<!-- 자료실 -->
 <section id="files" class="hidden">
 <div class="card">
-<h1>📁 자료실</h1>
-<ul>
-<li>파일1.zip</li>
-<li>문서.pdf</li>
-</ul>
+<h2>📁 자료실</h2>
+<input id="fileInput" placeholder="자료 내용">
+<button onclick="addFile()">추가</button>
+<div id="fileList"></div>
 </div>
 </section>
 
 <!-- 🛠 관리자 -->
 <section id="admin" class="hidden">
 <div class="card">
-<h1>🛠️ 관리자 페이지</h1>
+<h2>🛠 관리자 게시판</h2>
 
-<textarea id="postText" rows="4" placeholder="글 작성..."></textarea>
-<br><br>
+<textarea id="postText" rows="4" placeholder="글 작성"></textarea>
 <button onclick="addPost()">글 올리기</button>
 
-<h3>📌 게시글</h3>
 <div id="postList"></div>
 </div>
 </section>
-
-<footer>Made by Me</footer>
 
 </div>
 
 <script>
 
-// 로그인 후 진입
-function enterSite(){
-    document.getElementById("loginScreen").style.display="none";
-    document.querySelector(".content").style.display="block";
-    document.querySelector(".sidebar").style.display="block";
-
-    if(localStorage.getItem("role")==="admin"){
-        document.getElementById("adminBtn").style.display="block";
-    }
-
-    loadPosts();
+// ===== DB =====
+function getData(k){
+    return JSON.parse(localStorage.getItem(k) || "[]");
+}
+function saveData(k,v){
+    localStorage.setItem(k,JSON.stringify(v));
 }
 
-// 가입
+// ===== 로그인 =====
 function signup(){
-    let id=document.getElementById("su_id").value;
-    let pw=document.getElementById("su_pw").value;
-
+    let id=su_id.value;
+    let pw=su_pw.value;
     if(!id||!pw) return;
 
     localStorage.setItem("user_"+id,pw);
     alert("가입 완료");
 }
 
-// 로그인
 function login(){
-    let id=document.getElementById("li_id").value;
-    let pw=document.getElementById("li_pw").value;
+    let id=li_id.value;
+    let pw=li_pw.value;
 
     if(id==="JongHwang" && pw==="Jonghwang"){
         localStorage.setItem("role","admin");
@@ -303,41 +243,108 @@ function login(){
         localStorage.setItem("role","user");
         enterSite();
     }else{
-        document.getElementById("msg").innerText="로그인 실패";
+        msg.innerText="로그인 실패";
     }
 }
 
-// 화면 전환
+function enterSite(){
+    loginScreen.style.display="none";
+
+    if(localStorage.getItem("role")==="admin"){
+        adminBtn.style.display="block";
+    }
+
+    loadAll();
+}
+
+// ===== 페이지 =====
 function show(id){
-    document.querySelectorAll("section").forEach(s=>{
-        s.classList.add("hidden");
-    });
+    document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
     document.getElementById(id).classList.remove("hidden");
 }
 
-// 글쓰기
+// ===== 공부 =====
+function addStudy(){
+    let d=getData("study");
+    d.push({id:Date.now(),text:studyInput.value});
+    saveData("study",d);
+    loadStudy();
+}
+
+function deleteStudy(id){
+    saveData("study",getData("study").filter(i=>i.id!==id));
+    loadStudy();
+}
+
+function loadStudy(){
+    studyList.innerHTML = getData("study").map(i=>
+        `<div class="card">${i.text}<button onclick="deleteStudy(${i.id})">삭제</button></div>`
+    ).join("");
+}
+
+// ===== 갤러리 =====
+function addGallery(){
+    let d=getData("gallery");
+    d.push({id:Date.now(),url:galleryInput.value});
+    saveData("gallery",d);
+    loadGallery();
+}
+
+function deleteGallery(id){
+    saveData("gallery",getData("gallery").filter(i=>i.id!==id));
+    loadGallery();
+}
+
+function loadGallery(){
+    galleryList.innerHTML = getData("gallery").map(i=>
+        `<div class="card"><img src="${i.url}" style="max-width:100%"><button onclick="deleteGallery(${i.id})">삭제</button></div>`
+    ).join("");
+}
+
+// ===== 자료실 =====
+function addFile(){
+    let d=getData("files");
+    d.push({id:Date.now(),text:fileInput.value});
+    saveData("files",d);
+    loadFiles();
+}
+
+function deleteFile(id){
+    saveData("files",getData("files").filter(i=>i.id!==id));
+    loadFiles();
+}
+
+function loadFiles(){
+    fileList.innerHTML = getData("files").map(i=>
+        `<div class="card">${i.text}<button onclick="deleteFile(${i.id})">삭제</button></div>`
+    ).join("");
+}
+
+// ===== 관리자 =====
 function addPost(){
-    let text=document.getElementById("postText").value;
-    if(!text) return;
-
-    let posts=JSON.parse(localStorage.getItem("posts")||"[]");
-    posts.push(text);
-    localStorage.setItem("posts",JSON.stringify(posts));
-
-    document.getElementById("postText").value="";
+    let d=getData("posts");
+    d.push({id:Date.now(),text:postText.value});
+    saveData("posts",d);
     loadPosts();
 }
 
-// 글 불러오기
+function deletePost(id){
+    saveData("posts",getData("posts").filter(i=>i.id!==id));
+    loadPosts();
+}
+
 function loadPosts(){
-    let posts=JSON.parse(localStorage.getItem("posts")||"[]");
-    let html="";
+    postList.innerHTML = getData("posts").map(i=>
+        `<div class="card">${i.text}<button onclick="deletePost(${i.id})">삭제</button></div>`
+    ).join("");
+}
 
-    posts.forEach(p=>{
-        html+=`<div class="card">${p}</div>`;
-    });
-
-    document.getElementById("postList").innerHTML=html;
+// ===== 전체 =====
+function loadAll(){
+    loadStudy();
+    loadGallery();
+    loadFiles();
+    loadPosts();
 }
 
 </script>
