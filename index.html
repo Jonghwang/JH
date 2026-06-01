@@ -3,12 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My CMS</title>
+<title>CMS + Game</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
-body{background:#0f172a;color:white;display:flex;min-height:100vh;}
 
+body{
+    display:flex;
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:white;
+}
+
+/* 로그인 */
 .login{
     position:fixed;inset:0;
     display:flex;justify-content:center;align-items:center;
@@ -16,32 +23,79 @@ body{background:#0f172a;color:white;display:flex;min-height:100vh;}
 }
 
 .box{
-    background:rgba(255,255,255,0.05);
+    background:rgba(255,255,255,0.06);
     padding:25px;border-radius:15px;
-    width:260px;display:flex;flex-direction:column;gap:10px;
+    width:260px;
+    display:flex;flex-direction:column;gap:10px;
 }
 
-input,textarea{
-    padding:10px;border:none;border-radius:8px;
+/* 사이드 */
+.sidebar{
+    width:220px;
+    background:rgba(255,255,255,0.05);
+    padding:20px;
+    backdrop-filter:blur(10px);
 }
 
-button{
-    padding:8px;border:none;border-radius:8px;
+.sidebar button{
+    width:100%;
+    margin-bottom:8px;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:rgba(255,255,255,0.08);
+    color:white;
     cursor:pointer;
 }
 
-.sidebar{
-    width:240px;background:rgba(255,255,255,0.05);
-    padding:20px;
-}
-
+/* 콘텐츠 */
 .content{
-    flex:1;padding:25px;
+    flex:1;
+    padding:30px;
 }
 
 .card{
-    background:rgba(255,255,255,0.05);
-    padding:15px;border-radius:12px;margin-bottom:10px;
+    background:rgba(255,255,255,0.06);
+    padding:20px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,0.1);
+    margin-bottom:15px;
+}
+
+/* 게임 */
+#game .card{
+    max-width:420px;
+    margin:auto;
+    text-align:center;
+}
+
+#question{
+    font-size:22px;
+    margin:15px 0;
+}
+
+input,textarea{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+    outline:none;
+    margin-top:10px;
+}
+
+button{
+    padding:10px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    margin-top:10px;
+    background:#3b82f6;
+    color:white;
+}
+
+button:hover{
+    background:#2563eb;
+    transform:scale(1.03);
 }
 
 .hidden{display:none;}
@@ -50,9 +104,10 @@ button{
 
 <body>
 
-<!-- 🔐 로그인 -->
+<!-- 로그인 -->
 <div class="login" id="loginBox">
 <div class="box">
+
 <h3>LOGIN</h3>
 
 <input id="id" placeholder="ID">
@@ -66,23 +121,22 @@ button{
 <button onclick="signup()">가입</button>
 
 <p id="msg"></p>
+
 </div>
 </div>
 
-<!-- 📌 사이드 -->
+<!-- 사이드 -->
 <div class="sidebar">
-<h3>CMS</h3>
-
 <button onclick="show('home')">홈</button>
 <button onclick="show('board')">게시판</button>
-<button onclick="show('admin')" id="adminBtn" style="display:none;">관리자</button>
-
+<button onclick="show('game')">게임</button>
 <button onclick="logout()">로그아웃</button>
 </div>
 
-<!-- 📌 컨텐츠 -->
+<!-- 콘텐츠 -->
 <div class="content">
 
+<!-- 홈 -->
 <section id="home">
 <div class="card">환영 👋</div>
 </section>
@@ -101,11 +155,19 @@ button{
 </div>
 </section>
 
-<!-- 관리자 -->
-<section id="admin" class="hidden">
+<!-- 게임 -->
+<section id="game" class="hidden">
 <div class="card">
-<h3>승인 대기</h3>
-<div id="adminList"></div>
+
+<h3>🎮 단어 게임</h3>
+
+<p id="question">문제</p>
+
+<input id="answer" placeholder="정답 입력">
+<button onclick="check()">확인</button>
+
+<p id="score">점수: 0</p>
+
 </div>
 </section>
 
@@ -113,48 +175,37 @@ button{
 
 <script>
 
-// ===== 데이터 =====
-const get = k => JSON.parse(localStorage.getItem(k)||"[]");
-const set = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
-
-// ===== 회원가입 =====
+// ===== 로그인 =====
 function signup(){
-    let i=nid.value, p=npw.value;
-    localStorage.setItem("u_"+i,p);
-    alert("가입완료");
+    localStorage.setItem("u_"+nid.value,npw.value);
+    alert("가입 완료");
 }
 
-// ===== 로그인 =====
 function login(){
-    let i=id.value, p=pw.value;
 
-    if(i==="JongHwang" && p==="Jonghwang"){
+    if(id.value==="JongHwang" && pw.value==="Jonghwang"){
         localStorage.setItem("role","admin");
-        localStorage.setItem("login","1");
         enter();
         return;
     }
 
-    if(localStorage.getItem("u_"+i)===p){
+    if(localStorage.getItem("u_"+id.value)===pw.value){
         localStorage.setItem("role","user");
-        localStorage.setItem("user",i);
-        localStorage.setItem("login","1");
         enter();
     }else{
         msg.innerText="실패";
     }
 }
 
-// ===== 자동 로그인 =====
 window.onload=()=>{
-    if(localStorage.getItem("login")==="1") enter();
+    if(localStorage.getItem("logged")=="1") enter();
 }
 
 // ===== 진입 =====
 function enter(){
+    localStorage.setItem("logged","1");
     loginBox.style.display="none";
-    if(localStorage.getItem("role")==="admin") adminBtn.style.display="block";
-    load();
+    loadGame();
 }
 
 // ===== 로그아웃 =====
@@ -169,63 +220,50 @@ function show(id){
     document.getElementById(id).classList.remove("hidden");
 }
 
-// ===== 글쓰기 (유저 가능) =====
-function addPost(){
-    let d=get("posts");
-
-    let role=localStorage.getItem("role");
-    let user=localStorage.getItem("user")||"guest";
-
-    d.push({
-        id:Date.now(),
-        text:text.value,
-        user:user,
-        status: role==="admin" ? "approved":"pending"
-    });
-
-    set("posts",d);
-    load();
-}
-
 // ===== 게시판 =====
-function load(){
-    let role=localStorage.getItem("role");
-    let d=get("posts");
+let posts=[];
 
-    let showList = d.filter(i=>{
-        return role==="admin" || i.status==="approved";
-    });
-
-    list.innerHTML=showList.map(i=>
-        `<div class="card">
-            ${i.text}
-            <br>
-            <small>${i.user} / ${i.status}</small>
-        </div>`
-    ).join("");
-
-    // 관리자 리스트
-    if(role==="admin"){
-        adminList.innerHTML=d.filter(i=>i.status==="pending").map(i=>
-            `<div class="card">
-                ${i.text}
-                <br>
-                <small>${i.user}</small>
-                <button onclick="approve(${i.id})">승인</button>
-            </div>`
-        ).join("");
-    }
+function addPost(){
+    posts.push(text.value);
+    render();
 }
 
-// ===== 승인 =====
-function approve(id){
-    let d=get("posts").map(i=>{
-        if(i.id===id) i.status="approved";
-        return i;
-    });
+function render(){
+    list.innerHTML=posts.map(p=>`<div class="card">${p}</div>`).join("");
+}
 
-    set("posts",d);
-    load();
+// ===== 게임 =====
+let words=[
+    {q:"apple",a:"사과"},
+    {q:"dog",a:"개"},
+    {q:"book",a:"책"}
+];
+
+let i=0;
+let score=0;
+
+function loadGame(){
+    question.innerText=words[i].q;
+    scoreEl();
+}
+
+function check(){
+    if(answer.value===words[i].a){
+        score+=10;
+        alert("정답");
+    }else{
+        alert("틀림");
+    }
+
+    i++;
+    if(i>=words.length) i=0;
+
+    answer.value="";
+    loadGame();
+}
+
+function scoreEl(){
+    document.getElementById("score").innerText="점수: "+score;
 }
 
 </script>
