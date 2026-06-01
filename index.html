@@ -68,7 +68,7 @@ body{
 .logo{
     font-size:28px;
     font-weight:bold;
-    margin-bottom:30px;
+    margin-bottom:20px;
 }
 
 .nav button{
@@ -115,6 +115,14 @@ button{
     border-radius:8px;
     border:none;
 }
+
+/* 로그아웃 버튼 */
+.logout{
+    background:#ef4444;
+    color:white;
+    width:100%;
+    margin-top:15px;
+}
 </style>
 </head>
 
@@ -150,6 +158,8 @@ button{
         <button onclick="show('files')">자료실</button>
         <button onclick="show('admin')" id="adminBtn" style="display:none;">관리자</button>
     </div>
+
+    <button class="logout" onclick="logout()">로그아웃</button>
 </div>
 
 <!-- 🔓 콘텐츠 -->
@@ -232,6 +242,7 @@ function login(){
     let pw=li_pw.value;
 
     if(id==="JongHwang" && pw==="Jonghwang"){
+        localStorage.setItem("loggedIn","true");
         localStorage.setItem("role","admin");
         enterSite();
         return;
@@ -240,6 +251,7 @@ function login(){
     let saved=localStorage.getItem("user_"+id);
 
     if(saved===pw){
+        localStorage.setItem("loggedIn","true");
         localStorage.setItem("role","user");
         enterSite();
     }else{
@@ -247,6 +259,14 @@ function login(){
     }
 }
 
+// ===== 자동 로그인 =====
+window.onload=function(){
+    if(localStorage.getItem("loggedIn")==="true"){
+        enterSite();
+    }
+}
+
+// ===== 사이트 진입 =====
 function enterSite(){
     loginScreen.style.display="none";
 
@@ -255,6 +275,13 @@ function enterSite(){
     }
 
     loadAll();
+}
+
+// ===== 로그아웃 =====
+function logout(){
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("role");
+    location.reload();
 }
 
 // ===== 페이지 =====
@@ -277,7 +304,7 @@ function deleteStudy(id){
 }
 
 function loadStudy(){
-    studyList.innerHTML = getData("study").map(i=>
+    studyList.innerHTML=getData("study").map(i=>
         `<div class="card">${i.text}<button onclick="deleteStudy(${i.id})">삭제</button></div>`
     ).join("");
 }
@@ -296,7 +323,7 @@ function deleteGallery(id){
 }
 
 function loadGallery(){
-    galleryList.innerHTML = getData("gallery").map(i=>
+    galleryList.innerHTML=getData("gallery").map(i=>
         `<div class="card"><img src="${i.url}" style="max-width:100%"><button onclick="deleteGallery(${i.id})">삭제</button></div>`
     ).join("");
 }
@@ -315,7 +342,7 @@ function deleteFile(id){
 }
 
 function loadFiles(){
-    fileList.innerHTML = getData("files").map(i=>
+    fileList.innerHTML=getData("files").map(i=>
         `<div class="card">${i.text}<button onclick="deleteFile(${i.id})">삭제</button></div>`
     ).join("");
 }
@@ -334,12 +361,12 @@ function deletePost(id){
 }
 
 function loadPosts(){
-    postList.innerHTML = getData("posts").map(i=>
+    postList.innerHTML=getData("posts").map(i=>
         `<div class="card">${i.text}<button onclick="deletePost(${i.id})">삭제</button></div>`
     ).join("");
 }
 
-// ===== 전체 =====
+// ===== 전체 로딩 =====
 function loadAll(){
     loadStudy();
     loadGallery();
