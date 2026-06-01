@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Archive</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:260px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(15px);
+    border-right:1px solid rgba(255,255,255,0.1);
+    padding:25px;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:30px;
+}
+
+.nav button{
+    width:100%;
+    border:none;
+    background:none;
+    color:white;
+    padding:14px;
+    text-align:left;
+    border-radius:10px;
+    cursor:pointer;
+    margin-bottom:8px;
+    transition:.2s;
+}
+
+.nav button:hover{
+    background:rgba(255,255,255,0.1);
+}
+
+.content{
+    flex:1;
+    padding:35px;
+}
+
+.card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:20px;
+    padding:25px;
+    margin-bottom:20px;
+    backdrop-filter:blur(10px);
+}
+
+h1{
+    margin-bottom:15px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.stat{
+    background:rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:15px;
+}
+
+.number{
+    font-size:32px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.hidden{
+    display:none;
+}
+
+ul{
+    margin-left:20px;
+    margin-top:10px;
+}
+
+footer{
+    margin-top:30px;
+    opacity:0.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <div class="logo">📁 Archive</div>
+
+    <div class="nav">
+        <button onclick="show('home')">🏠 홈</button>
+        <button onclick="show('record')">📅 기록</button>
+        <button onclick="show('project')">🎮 프로젝트</button>
+        <button onclick="show('study')">📚 공부</button>
+        <button onclick="show('gallery')">🖼️ 갤러리</button>
+        <button onclick="show('files')">📁 자료실</button>
+    </div>
+</div>
+
+<div class="content">
+
+<section id="home">
+
+<div class="card">
+<h1>환영합니다 👋</h1>
+<p>개인 기록 저장소입니다.</p>
+</div>
+
+<div class="stats">
+
+<div class="stat">
+기록 수
+<div class="number">124</div>
+</div>
+
+<div class="stat">
+프로젝트
+<div class="number">8</div>
+</div>
+
+<div class="stat">
+업데이트
+<div class="number">Today</div>
+</div>
+
+</div>
+
+</section>
+
+<section id="record" class="hidden">
+<div class="card">
+<h1>📅 활동 기록</h1>
+
+<ul>
+<li>2026-06-01 사이트 제작 시작</li>
+<li>2026-05-31 단어 게임 기획</li>
+<li>2026-05-20 프로젝트 정리</li>
+</ul>
+
+</div>
+</section>
+
+<section id="project" class="hidden">
+<div class="card">
+<h1>🎮 프로젝트</h1>
+
+<ul>
+<li>단어 게임</li>
+<li>개인 홈페이지</li>
+<li>기록 관리 시스템</li>
+</ul>
+
+</div>
+</section>
+
+<section id="study" class="hidden">
+<div class="card">
+<h1>📚 공부 기록</h1>
+
+<ul>
+<li>수학 - 삼각형</li>
+<li>영어 - 단어 암기</li>
+<li>역사 - 조선 후기</li>
+</ul>
+
+</div>
+</section>
+
+<section id="gallery" class="hidden">
+<div class="card">
+<h1>🖼️ 갤러리</h1>
+<p>이미지들을 넣어두는 공간</p>
+</div>
+</section>
+
+<section id="files" class="hidden">
+<div class="card">
+<h1>📁 자료실</h1>
+
+<ul>
+<li><a href="#" style="color:#60a5fa;">파일1.zip</a></li>
+<li><a href="#" style="color:#60a5fa;">문서.pdf</a></li>
+</ul>
+
+</div>
+</section>
+
+<footer>
+Made by Me
+</footer>
+
+</div>
+
+<script>
+function show(id){
+
+const sections=document.querySelectorAll("section");
+
+sections.forEach(section=>{
+section.classList.add("hidden");
+});
+
+document.getElementById(id).classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
