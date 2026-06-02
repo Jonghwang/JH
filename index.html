@@ -3,157 +3,341 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JH 게시판</title>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<title>My Archive</title>
 
 <style>
-body{
+*{
     margin:0;
-    padding:20px;
-    background:#111827;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#0f172a;
     color:white;
-    font-family:sans-serif;
+    display:flex;
+    min-height:100vh;
 }
 
-h2{
-    margin-bottom:20px;
+/* 🔐 로그인 */
+.login-screen{
+    position:fixed;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    background:#0f172a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    gap:10px;
+    z-index:999;
 }
 
-button,input{
+.login-box{
+    background:rgba(255,255,255,0.05);
+    padding:25px;
+    border-radius:15px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:260px;
+}
+
+.login-box input{
     padding:10px;
     border:none;
+    border-radius:8px;
+}
+
+.login-box button{
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#2563eb;
+    color:white;
+}
+
+/* 🔓 메인 */
+.sidebar{
+    width:260px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(15px);
+    border-right:1px solid rgba(255,255,255,0.1);
+    padding:25px;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:30px;
+}
+
+.nav button{
+    width:100%;
+    border:none;
+    background:none;
+    color:white;
+    padding:14px;
+    text-align:left;
     border-radius:10px;
-    margin:5px;
+    cursor:pointer;
+    margin-bottom:8px;
+    transition:.2s;
+}
+
+.nav button:hover{
+    background:rgba(255,255,255,0.1);
+}
+
+.content{
+    flex:1;
+    padding:35px;
+}
+
+.card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:20px;
+    padding:25px;
+    margin-bottom:20px;
+    backdrop-filter:blur(10px);
+}
+
+.hidden{
+    display:none;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.stat{
+    background:rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:15px;
+}
+
+.number{
+    font-size:32px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+textarea{
+    width:100%;
+    padding:10px;
+    border-radius:10px;
 }
 
 button{
     cursor:pointer;
 }
 
-input{
-    width:300px;
-}
-
-.card{
-    background:#1f2937;
-    padding:10px;
-    margin-top:10px;
-    border-radius:10px;
-}
 </style>
 </head>
+
 <body>
 
-<h2>🔥 JH 게시판</h2>
+<!-- 🔐 로그인 -->
+<div class="login-screen" id="loginScreen">
+    <h2>🔐 로그인</h2>
 
-<div id="loginBox">
-    <button onclick="login()">구글 로그인</button>
+    <div class="login-box">
+        <input id="su_id" placeholder="회원가입 아이디">
+        <input id="su_pw" placeholder="회원가입 비밀번호" type="password">
+        <button onclick="signup()">가입</button>
+
+        <hr style="opacity:0.2">
+
+        <input id="li_id" placeholder="로그인 아이디">
+        <input id="li_pw" placeholder="로그인 비밀번호" type="password">
+        <button onclick="login()">로그인</button>
+    </div>
+
+    <p id="msg"></p>
 </div>
 
-<div id="app" style="display:none;">
-    <p id="user"></p>
+<!-- 🔓 메인 -->
+<div class="sidebar">
+    <div class="logo">📁 Archive</div>
 
-    <input id="text" placeholder="글 입력">
-    <button onclick="addPost()">글쓰기</button>
-    <button onclick="logout()">로그아웃</button>
+    <div class="nav">
+        <button onclick="show('home')">🏠 홈</button>
+        <button onclick="show('record')">📅 기록</button>
+        <button onclick="show('project')">🎮 프로젝트</button>
+        <button onclick="show('study')">📚 공부</button>
+        <button onclick="show('gallery')">🖼️ 갤러리</button>
+        <button onclick="show('files')">📁 자료실</button>
+        <button onclick="show('admin')" id="adminBtn" style="display:none;">🛠️ 관리자</button>
+    </div>
+</div>
 
-    <div id="list"></div>
+<div class="content">
+
+<section id="home">
+<div class="card">
+<h1>환영합니다 👋</h1>
+<p>개인 기록 저장소입니다.</p>
+</div>
+
+<div class="stats">
+<div class="stat">기록 수<div class="number">124</div></div>
+<div class="stat">프로젝트<div class="number">8</div></div>
+<div class="stat">업데이트<div class="number">Today</div></div>
+</div>
+</section>
+
+<section id="record" class="hidden">
+<div class="card">
+<h1>📅 활동 기록</h1>
+<ul>
+<li>2026-06-01 사이트 제작 시작</li>
+<li>2026-05-31 단어 게임 기획</li>
+<li>2026-05-20 프로젝트 정리</li>
+</ul>
+</div>
+</section>
+
+<section id="project" class="hidden">
+<div class="card">
+<h1>🎮 프로젝트</h1>
+<ul>
+<li>단어 게임</li>
+<li>개인 홈페이지</li>
+<li>기록 관리 시스템</li>
+</ul>
+</div>
+</section>
+
+<section id="study" class="hidden">
+<div class="card">
+<h1>📚 공부 기록</h1>
+<ul>
+<li>수학 - 삼각형</li>
+<li>영어 - 단어 암기</li>
+<li>역사 - 조선 후기</li>
+</ul>
+</div>
+</section>
+
+<section id="gallery" class="hidden">
+<div class="card">
+<h1>🖼️ 갤러리</h1>
+<p>이미지 공간</p>
+</div>
+</section>
+
+<section id="files" class="hidden">
+<div class="card">
+<h1>📁 자료실</h1>
+<ul>
+<li>파일1.zip</li>
+<li>문서.pdf</li>
+</ul>
+</div>
+</section>
+
+<!-- 🛠 관리자 -->
+<section id="admin" class="hidden">
+<div class="card">
+<h1>🛠️ 관리자 페이지</h1>
+
+<textarea id="postText" rows="4" placeholder="글 작성..."></textarea>
+<br><br>
+<button onclick="addPost()">글 올리기</button>
+
+<h3>📌 게시글</h3>
+<div id="postList"></div>
+</div>
+</section>
+
+<footer>Made by Me</footer>
+
 </div>
 
 <script>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCEUja-Qv2pfi6cXsYXFhlrJi7mikz7bXQ",
-  authDomain: "jonghwang-740ea.firebaseapp.com",
-  projectId: "jonghwang-740ea",
-  storageBucket: "jonghwang-740ea.firebasestorage.app",
-  messagingSenderId: "860043333916",
-  appId: "1:860043333916:web:67a6f08cdfd01f3933aad9",
-  measurementId: "G-KBBT5XCHJ9"
-};
+// 로그인 후 진입
+function enterSite(){
+    document.getElementById("loginScreen").style.display="none";
+    document.querySelector(".content").style.display="block";
+    document.querySelector(".sidebar").style.display="block";
 
-firebase.initializeApp(firebaseConfig);
+    if(localStorage.getItem("role")==="admin"){
+        document.getElementById("adminBtn").style.display="block";
+    }
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+    loadPosts();
+}
 
+// 가입
+function signup(){
+    let id=document.getElementById("su_id").value;
+    let pw=document.getElementById("su_pw").value;
+
+    if(!id||!pw) return;
+
+    localStorage.setItem("user_"+id,pw);
+    alert("가입 완료");
+}
+
+// 로그인
 function login(){
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithRedirect(provider);
-}
+    let id=document.getElementById("li_id").value;
+    let pw=document.getElementById("li_pw").value;
 
-auth.getRedirectResult().catch(error=>{
-    console.error(error);
-});
+    if(id==="JongHwang" && pw==="Jonghwang"){
+        localStorage.setItem("role","admin");
+        enterSite();
+        return;
+    }
 
-auth.onAuthStateChanged(user=>{
-    if(user){
-        document.getElementById("loginBox").style.display="none";
-        document.getElementById("app").style.display="block";
-        document.getElementById("user").innerText =
-            "👤 " + user.displayName;
+    let saved=localStorage.getItem("user_"+id);
 
-        loadPosts();
+    if(saved===pw){
+        localStorage.setItem("role","user");
+        enterSite();
     }else{
-        document.getElementById("loginBox").style.display="block";
-        document.getElementById("app").style.display="none";
+        document.getElementById("msg").innerText="로그인 실패";
     }
-});
+}
 
+// 화면 전환
+function show(id){
+    document.querySelectorAll("section").forEach(s=>{
+        s.classList.add("hidden");
+    });
+    document.getElementById(id).classList.remove("hidden");
+}
+
+// 글쓰기
 function addPost(){
-    const user = auth.currentUser;
+    let text=document.getElementById("postText").value;
+    if(!text) return;
 
-    if(!user){
-        alert("로그인 필요");
-        return;
-    }
+    let posts=JSON.parse(localStorage.getItem("posts")||"[]");
+    posts.push(text);
+    localStorage.setItem("posts",JSON.stringify(posts));
 
-    const text =
-        document.getElementById("text").value.trim();
-
-    if(!text){
-        alert("내용 입력");
-        return;
-    }
-
-    db.collection("posts").add({
-        text:text,
-        name:user.displayName,
-        uid:user.uid,
-        time:Date.now()
-    });
-
-    document.getElementById("text").value="";
+    document.getElementById("postText").value="";
+    loadPosts();
 }
 
+// 글 불러오기
 function loadPosts(){
-    db.collection("posts")
-    .orderBy("time","desc")
-    .onSnapshot(snapshot=>{
+    let posts=JSON.parse(localStorage.getItem("posts")||"[]");
+    let html="";
 
-        let html="";
-
-        snapshot.forEach(doc=>{
-
-            const d = doc.data();
-
-            html += `
-            <div class="card">
-                <b>${d.name}</b><br>
-                ${d.text}
-            </div>
-            `;
-        });
-
-        document.getElementById("list").innerHTML = html;
+    posts.forEach(p=>{
+        html+=`<div class="card">${p}</div>`;
     });
-}
 
-function logout(){
-    auth.signOut();
+    document.getElementById("postList").innerHTML=html;
 }
 
 </script>
